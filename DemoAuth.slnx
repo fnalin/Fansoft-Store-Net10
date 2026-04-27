@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DemoAuth.Api/DemoAuth.Api.csproj" />
+  <Project Path="DemoAuth.Mvc/DemoAuth.Mvc.csproj" />
+</Solution>
