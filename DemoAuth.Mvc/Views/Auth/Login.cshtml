@@ -1,0 +1,25 @@
+﻿@model DemoAuth.Mvc.Models.LoginViewModel
+
+<h2>Login Mock AD</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label>Usuário</label>
+        <input asp-for="UserName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Senha</label>
+        <input asp-for="Password" type="password" class="form-control" />
+    </div>
+
+    <button class="btn btn-primary">Entrar</button>
+</form>
+
+<div class="text-danger mt-3">
+    @Html.ValidationSummary()
+</div>
+
+<hr />
+
+<p>Senha para todos: <strong>123</strong></p>

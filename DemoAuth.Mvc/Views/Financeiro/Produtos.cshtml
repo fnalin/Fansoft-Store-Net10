@@ -1,0 +1,27 @@
+﻿@model List<DemoAuth.Mvc.Models.ProductViewModel>
+
+<h2>Produtos Financeiro</h2>
+
+<p>
+    Usuário logado: <strong>@User.Identity?.Name</strong>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nome</th>
+            <th>Preço</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var produto in Model ?? [])
+    {
+        <tr>
+            <td>@produto.Id</td>
+            <td>@produto.Name</td>
+            <td>@produto.Price.ToString("C")</td>
+        </tr>
+    }
+    </tbody>
+</table>

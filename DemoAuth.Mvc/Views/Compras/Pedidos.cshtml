@@ -1,0 +1,25 @@
+﻿@model List<DemoAuth.Mvc.Models.PurchaseOrderViewModel>
+
+<h2>Pedidos de Compras</h2>
+
+<p>Usuário logado: <strong>@User.Identity?.Name</strong></p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var pedido in Model ?? [])
+    {
+        <tr>
+            <td>@pedido.Id</td>
+            <td>@pedido.Description</td>
+            <td>@pedido.Amount.ToString("C")</td>
+        </tr>
+    }
+    </tbody>
+</table>

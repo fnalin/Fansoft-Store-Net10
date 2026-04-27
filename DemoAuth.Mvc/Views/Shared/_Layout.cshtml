@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,13 +10,14 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DemoAuth.Mvc.styles.css" asp-append-version="true" />
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">DemoAuth.Mvc</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -24,8 +26,49 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
+                               asp-action="Privacy">Privacy</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Financeiro" asp-action="Produtos">
+                                    Financeiro Produtos
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Financeiro" asp-action="Chamados">
+                                    Financeiro Chamados
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Compras" asp-action="Pedidos">
+                                    Compras Pedidos
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Compras" asp-action="Chamados">
+                                    Compras Chamados
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">
+                                    Sair
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">
+                                    Login
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -34,6 +77,61 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
+
+            <hr>
+            <h4>Matriz de Permissões</h4>
+
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Financeiro Produtos</th>
+                        <th>Financeiro Chamados</th>
+                        <th>Compras Pedidos</th>
+                        <th>Compras Chamados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>fulano</strong></td>
+                        <td class="text-success">✔ Permitido</td>
+                        <td class="text-danger">✖ Negado</td>
+                        <td class="text-success">✔ Permitido</td>
+                        <td class="text-success">✔ Permitido</td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>ciclano</strong></td>
+                        <td class="text-success">✔ Permitido</td>
+                        <td class="text-success">✔ Permitido</td>
+                        <td class="text-danger">✖ Negado</td>
+                        <td class="text-danger">✖ Negado</td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>maria</strong></td>
+                        <td class="text-success">✔ Permitido</td>
+                        <td class="text-danger">✖ Negado</td>
+                        <td class="text-success">✔ Permitido</td>
+                        <td class="text-success">✔ Permitido</td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>ze</strong></td>
+                        <td class="text-success">✔ Permitido</td>
+                        <td class="text-danger">✖ Negado</td>
+                        <td class="text-success">✔ Permitido</td>
+                        <td class="text-success">✔ Permitido</td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>ti</strong></td>
+                        <td colspan="4" class="text-center text-primary">
+                            🔓 Acesso total (God Mode)
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </main>
     </div>
 
@@ -47,4 +145,5 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

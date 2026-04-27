@@ -1,0 +1,23 @@
+﻿@model List<DemoAuth.Mvc.Models.TicketViewModel>
+
+<h2>Chamados Compras</h2>
+
+<p>Usuário logado: <strong>@User.Identity?.Name</strong></p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Título</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var chamado in Model ?? [])
+    {
+        <tr>
+            <td>@chamado.Id</td>
+            <td>@chamado.Titulo</td>
+        </tr>
+    }
+    </tbody>
+</table>

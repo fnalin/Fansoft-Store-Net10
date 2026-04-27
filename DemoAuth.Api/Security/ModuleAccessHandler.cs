@@ -1,46 +1,55 @@
 using System.Security.Claims;
-using DemoAuth.Api.Models;
+using DemoAuth.Api.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace DemoAuth.Api.Security;
 
 public sealed class ModuleAccessHandler : AuthorizationHandler<ModuleAccessRequirement>
 {
-    protected override Task HandleRequirementAsync(
+    private readonly AppDbContext _dbContext;
+
+    public ModuleAccessHandler(AppDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    protected override async Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
         ModuleAccessRequirement requirement)
     {
-        var user = context.User;
+        var userName =
+            context.User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? context.User.FindFirstValue("sub");
 
-        // GOD MODE
-        if (user.HasClaim("god_mode", "true"))
+        if (string.IsNullOrWhiteSpace(userName))
+            return;
+
+        var user = await _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserName == userName);
+
+        if (user is null)
+            return;
+
+        if (user.IsTi)
         {
             context.Succeed(requirement);
-            return Task.CompletedTask;
+            return;
         }
 
-        var permissions = user.FindAll("permission");
+        var permission = await _dbContext.UserPermissions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.UserName == userName &&
+                x.Module == requirement.Module);
 
-        foreach (var claim in permissions)
+        if (permission is null)
+            return;
+
+        if (permission.Level >= requirement.MinimumLevel)
         {
-            var parts = claim.Value.Split(':');
-
-            if (parts.Length != 2)
-                continue;
-
-            var module = parts[0];
-
-            if (!int.TryParse(parts[1], out var level))
-                continue;
-
-            if (module == requirement.Module &&
-                level >= (int)requirement.MinimumLevel)
-            {
-                context.Succeed(requirement);
-                return Task.CompletedTask;
-            }
+            context.Succeed(requirement);
         }
-
-        return Task.CompletedTask;
     }
 }

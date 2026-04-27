@@ -1,26 +1,56 @@
+using System.Security.Claims;
+using DemoAuth.Api.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace DemoAuth.Api.Security;
 
 public sealed class ModuleActionHandler : AuthorizationHandler<ModuleActionRequirement>
 {
-    protected override Task HandleRequirementAsync(
-        AuthorizationHandlerContext context,
+    private readonly AppDbContext _dbContext;
+
+    public ModuleActionHandler(AppDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    protected override async Task HandleRequirementAsync(
+        AuthorizationHandlerContext context, 
         ModuleActionRequirement requirement)
     {
-        if (context.User.HasClaim("god_mode", "true"))
+        var userName =
+            context.User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? context.User.FindFirstValue("sub");
+
+        if (string.IsNullOrWhiteSpace(userName))
+            return;
+
+        var user = await _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserName == userName);
+
+        if (user is null)
+            return;
+
+        if (user.IsTi)
         {
             context.Succeed(requirement);
-            return Task.CompletedTask;
+            return;
         }
 
-        var expectedPermission = $"{requirement.Module}:{requirement.Action}";
-
-        if (context.User.HasClaim("permission", expectedPermission))
+        if (requirement.Action == "Atendimento")
         {
-            context.Succeed(requirement);
-        }
+            var canHandleTickets = await _dbContext.UserPermissions
+                .AsNoTracking()
+                .AnyAsync(x =>
+                    x.UserName == userName &&
+                    x.Module == requirement.Module &&
+                    x.CanHandleTickets);
 
-        return Task.CompletedTask;
+            if (canHandleTickets)
+            {
+                context.Succeed(requirement);
+            }
+        }
     }
 }
